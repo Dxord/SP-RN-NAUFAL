@@ -9,7 +9,7 @@ const TransactionItem = ({item, onClick}: any) => {
       </View>
 
       <View style={{flex: 1, alignItems: 'flex-end'}}>
-        <Text style={styles.qty}>
+        <Text style={styles.price}>
           Total price: {'' + item.total_price.toFixed(2)}
         </Text>
       </View>
@@ -28,26 +28,23 @@ const styles = StyleSheet.create({
     },
     content: {
       flex: 1,
+      minHeight:60,
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: 12,
       paddingHorizontal: 8,
       borderBottomWidth:1,
       borderBottomColor:"#f0f0f0"
-    },
+    }, 
     price: {
-      textAlign: 'center',
       color: 'black',
       fontSize: 12,
-      fontWeight: '500',
-    },
-    qty: {
-      color: 'black',
-      fontSize: 10,
+      fontWeight:'800'
     },
     calc: {
       color: 'black',
       fontSize: 16,
+      fontWeight:"700"
     },
   
     calcQty: {

@@ -148,6 +148,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 8,
+    borderBottomColor:"#f0f0f0",
+    borderBottomWidth:1
   },
   price: {
     textAlign: 'center',
