@@ -22,21 +22,21 @@ let database: SQLite.SQLiteDatabase | null = null;
 
       createTables()
   } catch (error) {
-      console.error('Error initializing database:', error);
+      // console.error('Error initializing database:', error);
   }
 };
 export const createTables = () => {
-  database.transaction(tx => {
+  database.transaction((tx: { executeSql: (arg0: string) => void; }) => {
     tx.executeSql(
       'CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, transaction_id TEXT, total_price REAL, card_number TEXT);'
     );
   });
-  database.transaction(tx => {
+  database.transaction((tx: { executeSql: (arg0: string) => void; }) => {
     tx.executeSql(
       'CREATE TABLE IF NOT EXISTS transaction_items (id INTEGER PRIMARY KEY AUTOINCREMENT, transaction_id TEXT, product_id TEXT, price REAL, image TEXT, quantity INTEGER, title TEXT);'
     );
   });
-  database.transaction(tx => {
+  database.transaction((tx: { executeSql: (arg0: string) => void; }) => {
     tx.executeSql(
       'CREATE TABLE IF NOT EXISTS cart (id INTEGER PRIMARY KEY AUTOINCREMENT,product_id TEXT, title TEXT,image TEXT, quantity INTEGER NOT NULL DEFAULT 0, price INTEGER);'
     );
@@ -63,8 +63,8 @@ export const getTransactions =async (callback: (results: any) => void) => {
     return;
 }
 try { 
- await database.transaction(tx => {
-    tx.executeSql('SELECT * FROM transactions;', [], (tx, results) => {
+ await database.transaction((tx: { executeSql: (arg0: string, arg1: never[], arg2: (tx: any, results: any) => void) => void; }) => {
+    tx.executeSql('SELECT * FROM transactions;', [], (tx: any, results: any) => {
       callback(results);
     });
   });

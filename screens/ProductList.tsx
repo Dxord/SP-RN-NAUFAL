@@ -20,7 +20,7 @@ const ProductList = () => {
   useFocusEffect(
     useCallback(() => {
       fetchProducts();
-    }, [fetchProducts]),
+    }, [fetchProducts])
   );
   const getCartData = async () => {
     let data = await getCart();

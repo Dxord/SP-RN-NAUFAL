@@ -1,13 +1,21 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
-import {getCart} from '../storage/cartStorage';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import {getCart, updateCart} from '../storage/cartStorage';
 import {Product} from '../types/product';
 import {useFocusEffect} from '@react-navigation/native';
+import {deleteData} from '../utils/SQLiteDatabase';
 
 const ProductItem = ({item, onClick}: any) => {
   const [isSelected, setIsSelected] = useState<Product[]>([]);
   const [cart, setCart] = useState<any[]>([]);
-  
+
   useFocusEffect(
     useCallback(() => {
       getDataCart();
@@ -19,6 +27,50 @@ const ProductItem = ({item, onClick}: any) => {
     setIsSelected(isExist);
     setCart(cartData);
   }, []);
+
+  const minQty = (item: any) => {
+    if (isSelected[0].quantity == 1) {
+      Alert.alert('Confirm', 'Delete ' + item.title + ' from cart ?', [
+        {
+          text: 'No',
+          onPress: () => {
+            // Do nothing
+          },
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await deleteData('cart', `id='${item.id}'`);
+            getDataCart();
+          },
+        },
+      ]);
+    } else {
+      cart.map((i, index) => {
+        if (i.product_id == item.id) {
+          cart[index].quantity = cart[index].quantity - 1;
+        //   isSelected[0].quantity = isSelected[0].quantity - 1;
+        //   setIsSelected(isSelected);
+          setCart([...cart]);
+          updateCart(i, true);
+        }
+      });
+    }
+  };
+
+  const plusQty = (item: any) => {
+    cart.map((i, index) => {
+      console.log('exist', i.product_id, item.id);
+      if (i.product_id == item.id) {
+        cart[index].quantity = cart[index].quantity + 1;
+        // isSelected[0].quantity =isSelected[0].quantity+ 1;
+        // setIsSelected(isSelected);
+        setCart([...cart]);
+        updateCart(i);
+      }
+    });
+  };
   return (
     <TouchableOpacity
       style={[
@@ -41,7 +93,27 @@ const ProductItem = ({item, onClick}: any) => {
       }}>
       {isSelected[0] && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{isSelected[0].quantity}</Text>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              marginBottom: 4,
+            }}>
+            <TouchableOpacity
+              disabled={item.quantity == 0}
+              style={styles.roundButton}
+              onPress={() => minQty(item)}>
+              <Text style={styles.calc}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.badgeText}>{isSelected[0].quantity}</Text>
+            <TouchableOpacity
+              style={styles.roundButton}
+              onPress={() => plusQty(item)}>
+              <Text style={styles.calc}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -71,10 +143,11 @@ const styles = StyleSheet.create({
   title: {fontWeight: 800, textAlign: 'center'},
   price: {fontWeight: 500, textAlign: 'center'},
   badge: {
+    zIndex: 100,
     position: 'absolute',
     right: 8,
-    top: 8,
-    backgroundColor: '#feac80',
+    top: 12,
+    // backgroundColor: '#f00',
     minWidth: 20,
     height: 20,
     borderRadius: 10,
@@ -84,7 +157,24 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 12,
     fontWeight: '500',
-    color: 'white',
+    color: 'black',
+    marginHorizontal: 8,
+  },
+  calc: {
+    color: 'black',
+    fontSize: 16,
+  },
+  roundButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#febc80',
+  },
+  calcQty: {
+    color: 'black',
+    fontSize: 12,
   },
 });
 export default ProductItem;
